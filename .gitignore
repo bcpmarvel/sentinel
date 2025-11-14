@@ -218,6 +218,8 @@ __marimo__/
 CLAUDE.md
 
 # Project-specific
+*.pt
+*.onnx
 models/*.pt
 models/*.onnx
 data/videos/
