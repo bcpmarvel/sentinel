@@ -21,5 +21,8 @@ class Settings(BaseSettings):
     tracker_min_hits: int = 3
     tracker_iou_threshold: float = 0.3
 
+    enable_analytics: bool = False
+    zones_config_path: Path = Path("zones.json")
+
 
 settings = Settings()

@@ -1,6 +1,8 @@
 import argparse
 from pathlib import Path
 
+from src.analytics.service import AnalyticsService
+from src.analytics.utils import load_zones_from_json
 from src.config import settings
 from src.detection.models import YOLODetector
 from src.detection.service import DetectionService
@@ -40,6 +42,17 @@ def main() -> None:
         default=None,
         help="Path to YOLO model",
     )
+    parser.add_argument(
+        "--analytics",
+        action="store_true",
+        help="Enable zone-based analytics",
+    )
+    parser.add_argument(
+        "--zones",
+        type=str,
+        default=None,
+        help="Path to zones configuration JSON file",
+    )
 
     args = parser.parse_args()
 
@@ -47,15 +60,29 @@ def main() -> None:
     device = args.device or settings.device
     model_path = Path(args.model) if args.model else settings.model_path
 
+    if args.analytics and not args.track:
+        parser.error("--analytics requires --track to be enabled")
+
     detector = YOLODetector(model_path, device)
     detection_service = DetectionService(
         detector=detector,
         enable_tracking=args.track,
         conf_threshold=args.conf,
     )
-    annotators = Annotators(enable_tracking=args.track)
 
-    pipeline = VideoPipeline(detection_service, annotators)
+    analytics_service = None
+    zone_configs = []
+    if args.analytics:
+        zones_path = Path(args.zones) if args.zones else settings.zones_config_path
+        if not zones_path.exists():
+            parser.error(f"Zones configuration file not found: {zones_path}")
+
+        zone_configs = load_zones_from_json(zones_path)
+        analytics_service = AnalyticsService(zone_configs)
+
+    annotators = Annotators(enable_tracking=args.track, zone_configs=zone_configs)
+
+    pipeline = VideoPipeline(detection_service, annotators, analytics_service)
     pipeline.run(source)
 
 

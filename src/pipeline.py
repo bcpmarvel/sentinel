@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+from src.analytics.service import AnalyticsService
 from src.config import settings
 from src.detection.service import DetectionService
 from src.detection.utils import FPSCounter
@@ -12,9 +13,11 @@ class VideoPipeline:
         self,
         detection_service: DetectionService,
         annotators: Annotators,
+        analytics_service: AnalyticsService | None = None,
     ):
         self.detection_service = detection_service
         self.annotators = annotators
+        self.analytics_service = analytics_service
         self.fps_counter = FPSCounter()
 
     def run(self, source: str | int | None = None) -> None:
@@ -24,7 +27,7 @@ class VideoPipeline:
         if not cap.isOpened():
             raise ValueError(f"Failed to open video source: {source}")
 
-        window_name = "Object Tracking" if self.detection_service.enable_tracking else "Object Detection"
+        window_name = self._get_window_name()
 
         try:
             while True:
@@ -46,8 +49,19 @@ class VideoPipeline:
     def _process_frame(self, frame: np.ndarray) -> np.ndarray:
         results = self.detection_service.process(frame)
 
+        metrics = None
+        if self.analytics_service:
+            metrics = self.analytics_service.update(results)
+
         fps = self.fps_counter.update()
 
-        annotated_frame = self.annotators.draw(frame, results, fps)
+        annotated_frame = self.annotators.draw(frame, results, fps, metrics)
 
         return annotated_frame
+
+    def _get_window_name(self) -> str:
+        if self.analytics_service:
+            return "Video Analytics"
+        if self.detection_service.enable_tracking:
+            return "Object Tracking"
+        return "Object Detection"

@@ -227,3 +227,4 @@ data/images/
 *.mp4
 *.avi
 *.mov
+zones_*.json

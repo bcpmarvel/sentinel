@@ -1,0 +1,24 @@
+{
+  "zones": [
+    {
+      "id": "zone1",
+      "name": "Monitoring Area",
+      "type": "polygon",
+      "polygon": [
+        [200, 150],
+        [500, 150],
+        [500, 400],
+        [200, 400]
+      ]
+    },
+    {
+      "id": "entrance",
+      "name": "Entrance Line",
+      "type": "line",
+      "line": [
+        [100, 300],
+        [600, 300]
+      ]
+    }
+  ]
+}
