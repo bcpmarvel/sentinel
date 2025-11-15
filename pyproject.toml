@@ -10,9 +10,7 @@ dependencies = [
     "numpy>=2.3.4",
     "opencv-python>=4.11.0.86",
     "python-multipart>=0.0.20",
-    "questionary>=2.1.1",
     "rich>=14.2.0",
-    "rich-structlog>=0.4.1",
     "structlog>=25.5.0",
     "supervision>=0.26.1",
     "tomli>=2.3.0",
@@ -25,8 +23,8 @@ dependencies = [
 ]
 
 [project.scripts]
-detect = "sentinel.cli:main"
-serve = "sentinel.server:main"
+detect = "sentinel.cli:cli"
+serve = "sentinel.server:cli"
 
 [dependency-groups]
 dev = [
