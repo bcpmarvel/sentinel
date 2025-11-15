@@ -14,7 +14,9 @@ class Annotators:
     ):
         self.enable_tracking = enable_tracking
         self.zone_configs = zone_configs or []
-        self.zone_annotators: dict[str, sv.PolygonZoneAnnotator | sv.LineZoneAnnotator] = {}
+        self.zone_annotators: dict[
+            str, sv.PolygonZoneAnnotator | sv.LineZoneAnnotator
+        ] = {}
 
         self._initialize_zone_annotators()
 
@@ -81,7 +83,9 @@ class Annotators:
             if isinstance(annotator, sv.PolygonZoneAnnotator):
                 frame = annotator.annotate(frame)
                 frame = self._draw_polygon_metrics(frame, config, metric)
-            elif isinstance(annotator, sv.LineZoneAnnotator) and isinstance(zone, sv.LineZone):
+            elif isinstance(annotator, sv.LineZoneAnnotator) and isinstance(
+                zone, sv.LineZone
+            ):
                 frame = annotator.annotate(frame, line_counter=zone)
 
         return frame

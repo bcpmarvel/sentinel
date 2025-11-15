@@ -47,9 +47,7 @@ class AnalyticsService:
         tracks_in_zone = set()
         if detections.tracker_id is not None:
             tracks_in_zone = {
-                int(detections.tracker_id[i])
-                for i in range(len(detections))
-                if mask[i]
+                int(detections.tracker_id[i]) for i in range(len(detections)) if mask[i]
             }
 
         dwell_metrics = self.dwell_tracker.update(zone_id, tracks_in_zone)

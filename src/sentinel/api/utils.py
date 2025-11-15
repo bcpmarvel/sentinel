@@ -38,14 +38,16 @@ def results_to_detections(results: Results) -> list[dict]:
         conf = float(results.boxes.conf[i].cpu().numpy())
         cls = int(results.boxes.cls[i].cpu().numpy())
 
-        detections.append({
-            "x1": float(box[0]),
-            "y1": float(box[1]),
-            "x2": float(box[2]),
-            "y2": float(box[3]),
-            "confidence": conf,
-            "class_id": cls,
-            "class_name": results.names[cls],
-        })
+        detections.append(
+            {
+                "x1": float(box[0]),
+                "y1": float(box[1]),
+                "x2": float(box[2]),
+                "y2": float(box[3]),
+                "confidence": conf,
+                "class_id": cls,
+                "class_name": results.names[cls],
+            }
+        )
 
     return detections

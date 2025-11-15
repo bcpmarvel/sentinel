@@ -17,7 +17,9 @@ def load_config_file(config_path: str | Path) -> dict[str, Any]:
         return tomllib.load(f)
 
 
-def merge_config(base_config: dict[str, Any], file_config: dict[str, Any]) -> dict[str, Any]:
+def merge_config(
+    base_config: dict[str, Any], file_config: dict[str, Any]
+) -> dict[str, Any]:
     """Merge file config into base config, with file config taking precedence."""
     merged = base_config.copy()
     for key, value in file_config.items():
