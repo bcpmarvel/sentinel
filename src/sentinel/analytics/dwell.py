@@ -1,7 +1,7 @@
 import time
 from collections import defaultdict
 
-from src.analytics.models import ObjectState
+from sentinel.analytics.models import ObjectState
 
 
 class DwellTimeTracker:

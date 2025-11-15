@@ -1,10 +1,10 @@
 import uvicorn
-from src.config import settings
+from sentinel.config import settings
 
 
 def main() -> None:
     uvicorn.run(
-        "src.api.app:app",
+        "sentinel.api.app:app",
         host=settings.api_host,
         port=settings.api_port,
         reload=False,

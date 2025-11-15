@@ -1,13 +1,13 @@
 import argparse
 from pathlib import Path
 
-from src.analytics.service import AnalyticsService
-from src.analytics.utils import load_zones_from_json
-from src.config import settings
-from src.detection.models import YOLODetector
-from src.detection.service import DetectionService
-from src.pipeline import VideoPipeline
-from src.visualization.annotators import Annotators
+from sentinel.analytics.service import AnalyticsService
+from sentinel.analytics.utils import load_zones_from_json
+from sentinel.config import settings
+from sentinel.detection.models import YOLODetector
+from sentinel.detection.service import DetectionService
+from sentinel.pipeline import VideoPipeline
+from sentinel.visualization.annotators import Annotators
 
 
 def main() -> None:

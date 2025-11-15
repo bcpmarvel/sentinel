@@ -3,7 +3,7 @@ import cv2
 from fastapi import UploadFile, HTTPException
 from ultralytics.engine.results import Results
 
-from src.config import settings
+from sentinel.config import settings
 
 
 async def decode_image(file: UploadFile) -> np.ndarray:

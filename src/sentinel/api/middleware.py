@@ -6,7 +6,7 @@ import structlog
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from src.logging import get_logger
+from sentinel.logging import get_logger
 
 log = get_logger(__name__)
 

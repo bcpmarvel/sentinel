@@ -118,55 +118,6 @@ wheels = [
 ]
 
 [[package]]
-name = "cv-detection-tracking"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "fastapi" },
-    { name = "lap" },
-    { name = "numpy" },
-    { name = "opencv-python" },
-    { name = "python-multipart" },
-    { name = "structlog" },
-    { name = "supervision" },
-    { name = "torch" },
-    { name = "torchvision" },
-    { name = "ultralytics" },
-    { name = "uvicorn" },
-    { name = "websockets" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "pydantic-settings" },
-    { name = "pytest" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "fastapi", specifier = ">=0.121.2" },
-    { name = "lap", specifier = ">=0.5.12" },
-    { name = "numpy", specifier = ">=2.3.4" },
-    { name = "opencv-python", specifier = ">=4.11.0.86" },
-    { name = "python-multipart", specifier = ">=0.0.20" },
-    { name = "structlog", specifier = ">=25.5.0" },
-    { name = "supervision", specifier = ">=0.26.1" },
-    { name = "torch", specifier = ">=2.9.1" },
-    { name = "torchvision", specifier = ">=0.24.1" },
-    { name = "ultralytics", specifier = ">=8.3.228" },
-    { name = "uvicorn", specifier = ">=0.38.0" },
-    { name = "websockets", specifier = ">=15.0.1" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "pydantic-settings", specifier = ">=2.12.0" },
-    { name = "pytest", specifier = ">=9.0.1" },
-    { name = "ruff", specifier = ">=0.14.5" },
-]
-
-[[package]]
 name = "cycler"
 version = "0.12.1"
 source = { registry = "https://pypi.org/simple" }
@@ -823,6 +774,55 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/82/31/006cbb4b648ba379a95c87262c2855cd0d09453e500937f78b30f02fa1cd/scipy-1.16.3-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:c5192722cffe15f9329a3948c4b1db789fbb1f05c97899187dcf009b283aea70", size = 38678975, upload-time = "2025-10-28T17:33:15.809Z" },
     { url = "https://files.pythonhosted.org/packages/c2/7f/acbd28c97e990b421af7d6d6cd416358c9c293fc958b8529e0bd5d2a2a19/scipy-1.16.3-cp312-cp312-win_amd64.whl", hash = "sha256:56edc65510d1331dae01ef9b658d428e33ed48b4f77b1d51caf479a0253f96dc", size = 38555926, upload-time = "2025-10-28T17:33:21.388Z" },
     { url = "https://files.pythonhosted.org/packages/ce/69/c5c7807fd007dad4f48e0a5f2153038dc96e8725d3345b9ee31b2b7bed46/scipy-1.16.3-cp312-cp312-win_arm64.whl", hash = "sha256:a8a26c78ef223d3e30920ef759e25625a0ecdd0d60e5a8818b7513c3e5384cf2", size = 25463014, upload-time = "2025-10-28T17:33:25.975Z" },
+]
+
+[[package]]
+name = "sentinel"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [
+    { name = "fastapi" },
+    { name = "lap" },
+    { name = "numpy" },
+    { name = "opencv-python" },
+    { name = "python-multipart" },
+    { name = "structlog" },
+    { name = "supervision" },
+    { name = "torch" },
+    { name = "torchvision" },
+    { name = "ultralytics" },
+    { name = "uvicorn" },
+    { name = "websockets" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pydantic-settings" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "fastapi", specifier = ">=0.121.2" },
+    { name = "lap", specifier = ">=0.5.12" },
+    { name = "numpy", specifier = ">=2.3.4" },
+    { name = "opencv-python", specifier = ">=4.11.0.86" },
+    { name = "python-multipart", specifier = ">=0.0.20" },
+    { name = "structlog", specifier = ">=25.5.0" },
+    { name = "supervision", specifier = ">=0.26.1" },
+    { name = "torch", specifier = ">=2.9.1" },
+    { name = "torchvision", specifier = ">=0.24.1" },
+    { name = "ultralytics", specifier = ">=8.3.228" },
+    { name = "uvicorn", specifier = ">=0.38.0" },
+    { name = "websockets", specifier = ">=15.0.1" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pydantic-settings", specifier = ">=2.12.0" },
+    { name = "pytest", specifier = ">=9.0.1" },
+    { name = "ruff", specifier = ">=0.14.5" },
 ]
 
 [[package]]

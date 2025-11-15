@@ -3,7 +3,7 @@ import numpy as np
 import supervision as sv
 from ultralytics.engine.results import Results
 
-from src.analytics.models import ZoneConfig, ZoneMetrics, ZoneType
+from sentinel.analytics.models import ZoneConfig, ZoneMetrics, ZoneType
 
 
 class Annotators:

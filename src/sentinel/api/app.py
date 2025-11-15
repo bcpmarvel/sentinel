@@ -3,12 +3,12 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.config import settings
-from src.detection.models import YOLODetector
-from src.detection.service import DetectionService
-from src.api.routes import router
-from src.api.middleware import RequestLoggingMiddleware
-from src.logging import configure_logging, get_logger
+from sentinel.config import settings
+from sentinel.detection.models import YOLODetector
+from sentinel.detection.service import DetectionService
+from sentinel.api.routes import router
+from sentinel.api.middleware import RequestLoggingMiddleware
+from sentinel.logging import configure_logging, get_logger
 
 configure_logging()
 log = get_logger(__name__)

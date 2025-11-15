@@ -1,8 +1,8 @@
 import supervision as sv
 from ultralytics.engine.results import Results
 
-from src.analytics.dwell import DwellTimeTracker
-from src.analytics.models import ZoneConfig, ZoneMetrics, ZoneType
+from sentinel.analytics.dwell import DwellTimeTracker
+from sentinel.analytics.models import ZoneConfig, ZoneMetrics, ZoneType
 
 
 class AnalyticsService:

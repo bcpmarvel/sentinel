@@ -1,11 +1,11 @@
 import time
 from fastapi import APIRouter, UploadFile, File, Depends, Request
 
-from src.api.schemas import DetectionResponse, HealthResponse
-from src.api.dependencies import get_detection_service
-from src.api.utils import decode_image, results_to_detections
-from src.detection.service import DetectionService
-from src.logging import get_logger
+from sentinel.api.schemas import DetectionResponse, HealthResponse
+from sentinel.api.dependencies import get_detection_service
+from sentinel.api.utils import decode_image, results_to_detections
+from sentinel.detection.service import DetectionService
+from sentinel.logging import get_logger
 
 log = get_logger(__name__)
 router = APIRouter(prefix="/api")

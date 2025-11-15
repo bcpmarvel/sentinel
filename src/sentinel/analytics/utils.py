@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from src.analytics.models import ZoneConfig, ZoneType
+from sentinel.analytics.models import ZoneConfig, ZoneType
 
 
 def load_zones_from_json(path: Path) -> list[ZoneConfig]:

@@ -1,11 +1,11 @@
 import cv2
 import numpy as np
 
-from src.analytics.service import AnalyticsService
-from src.config import settings
-from src.detection.service import DetectionService
-from src.detection.utils import FPSCounter
-from src.visualization.annotators import Annotators
+from sentinel.analytics.service import AnalyticsService
+from sentinel.config import settings
+from sentinel.detection.service import DetectionService
+from sentinel.detection.utils import FPSCounter
+from sentinel.visualization.annotators import Annotators
 
 
 class VideoPipeline:

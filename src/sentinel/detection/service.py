@@ -1,8 +1,8 @@
 import numpy as np
 from ultralytics.engine.results import Results
 
-from src.config import settings
-from src.detection.models import YOLODetector
+from sentinel.config import settings
+from sentinel.detection.models import YOLODetector
 
 
 class DetectionService:

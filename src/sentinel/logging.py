@@ -1,6 +1,6 @@
 import sys
 import structlog
-from src.config import settings
+from sentinel.config import settings
 
 
 def configure_logging() -> None:
