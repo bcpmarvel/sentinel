@@ -1,0 +1,36 @@
+# Sentinel Configuration File Example
+# Copy this file to sentinel.toml and customize as needed
+# Usage: detect run --config sentinel.toml
+
+# Model Configuration
+model_path = "models/yolov8n.pt"
+device = "mps"  # Options: mps, cuda, cpu
+conf_threshold = 0.5
+iou_threshold = 0.45
+max_detections = 300
+input_size = 640
+
+# Video Configuration
+video_source = 0  # 0 for webcam, or path to video file
+display_width = 1280
+display_height = 720
+
+# Tracking Configuration
+enable_tracking = false
+tracker_max_age = 30
+tracker_min_hits = 3
+tracker_iou_threshold = 0.3
+
+# Analytics Configuration
+enable_analytics = false
+zones_config_path = "zones.json"
+
+# API Server Configuration
+api_host = "0.0.0.0"
+api_port = 8000
+api_cors_origins = ["*"]
+api_max_image_size = 10485760  # 10MB in bytes
+
+# Logging Configuration
+log_level = "INFO"  # Options: DEBUG, INFO, WARNING, ERROR
+log_format = "console"  # Options: console, json
