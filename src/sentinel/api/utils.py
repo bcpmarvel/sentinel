@@ -1,9 +1,12 @@
+import imghdr
 import numpy as np
 import cv2
 from fastapi import UploadFile, HTTPException
 from ultralytics.engine.results import Results
 
 from sentinel.config import settings
+
+ALLOWED_IMAGE_TYPES = {"jpeg", "png", "bmp", "webp"}
 
 
 async def decode_image(file: UploadFile) -> np.ndarray:
@@ -15,13 +18,20 @@ async def decode_image(file: UploadFile) -> np.ndarray:
             detail=f"Image size exceeds maximum allowed size of {settings.api_max_image_size} bytes",
         )
 
+    image_type = imghdr.what(None, h=contents)
+    if image_type not in ALLOWED_IMAGE_TYPES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid image type. Allowed types: {', '.join(ALLOWED_IMAGE_TYPES)}",
+        )
+
     nparr = np.frombuffer(contents, np.uint8)
     image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
     if image is None:
         raise HTTPException(
             status_code=400,
-            detail="Invalid image format. Supported formats: JPEG, PNG, BMP",
+            detail="Failed to decode image. File may be corrupted.",
         )
 
     return image

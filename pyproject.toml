@@ -9,11 +9,11 @@ dependencies = [
     "lap>=0.5.12",
     "numpy>=2.3.4",
     "opencv-python>=4.11.0.86",
+    "pydantic-settings>=2.12.0",
     "python-multipart>=0.0.20",
     "rich>=14.2.0",
     "structlog>=25.5.0",
     "supervision>=0.26.1",
-    "tomli>=2.3.0",
     "torch>=2.9.1",
     "torchvision>=0.24.1",
     "typer>=0.20.0",
@@ -28,7 +28,6 @@ serve = "sentinel.server:cli"
 
 [dependency-groups]
 dev = [
-    "pydantic-settings>=2.12.0",
     "pytest>=9.0.1",
     "ruff>=0.14.5",
 ]

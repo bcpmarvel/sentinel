@@ -26,7 +26,7 @@ class Settings(BaseSettings):
 
     api_host: str = "0.0.0.0"
     api_port: int = 8000
-    api_cors_origins: list[str] = ["*"]
+    api_cors_origins: list[str] = []
     api_max_image_size: int = 10 * 1024 * 1024
 
     log_level: str = "INFO"

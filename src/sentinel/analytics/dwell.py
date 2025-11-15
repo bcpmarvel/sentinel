@@ -61,10 +61,3 @@ class DwellTimeTracker:
             metrics["max_dwell_time"] = 0.0
 
         return metrics
-
-    def get_active_tracks_in_zone(self, zone_id: str) -> set[int]:
-        return {
-            track_id
-            for track_id, obj in self.objects.items()
-            if zone_id in obj.current_zones
-        }

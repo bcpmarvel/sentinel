@@ -22,7 +22,7 @@ def configure_logging(use_rich: bool = True) -> None:
     else:
         processors += [
             structlog.dev.set_exc_info,
-            structlog.dev.ConsoleRenderer(),
+            structlog.dev.ConsoleRenderer(colors=use_rich),
         ]
 
     structlog.configure(

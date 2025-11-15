@@ -20,6 +20,8 @@ class DetectionResponse(BaseModel):
     processing_time_ms: float = Field(
         ..., description="Processing time in milliseconds"
     )
+    model_name: str = Field(..., description="Model name used for inference")
+    device: str = Field(..., description="Device used for inference")
 
 
 class HealthResponse(BaseModel):

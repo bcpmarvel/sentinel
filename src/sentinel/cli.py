@@ -66,8 +66,11 @@ def main(
             file_config = load_config_file(config)
             if not quiet:
                 print_success(f"Loaded config: {config}")
-        except Exception as e:
-            print_error(f"Failed to load config: {e}")
+        except FileNotFoundError as e:
+            print_error(f"Config file not found: {e}")
+            raise typer.Exit(1)
+        except (ValueError, KeyError) as e:
+            print_error(f"Invalid config format: {e}")
             raise typer.Exit(1)
 
     parsed_source = (
@@ -99,7 +102,10 @@ def main(
                 detector = YOLODetector(model_path, selected_device)
         else:
             detector = YOLODetector(model_path, selected_device)
-    except Exception as e:
+    except FileNotFoundError:
+        print_error(f"Model file not found: {model_path}")
+        raise typer.Exit(1)
+    except RuntimeError as e:
         print_error(f"Model load failed: {e}")
         raise typer.Exit(1)
 

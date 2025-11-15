@@ -16,6 +16,9 @@ class YOLODetector:
             self.model.to("cpu")
             self.device = "cpu"
 
+        self.model.model.eval()
+
+    @torch.inference_mode()
     def predict(
         self,
         frame,
@@ -33,6 +36,7 @@ class YOLODetector:
         )
         return results[0]
 
+    @torch.inference_mode()
     def track(
         self,
         frame,
