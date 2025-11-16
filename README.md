@@ -41,7 +41,7 @@
   <br>
   <i>Real-time tracking of 20+ pedestrians with trajectory prediction</i>
   <br><br>
-  <a href="https://github.com/bcpmarvel/sentinel/releases/download/v0.1.0/mot17-05-tracked.mp4">📥 Download Full Quality Video</a> (34MB MP4)
+  <a href="https://github.com/bcpmarvel/sentinel/releases/download/v0.1.1/mot17-05-tracked.mp4">📥 Download Full Quality Video</a> (34MB MP4)
 </div>
 
 ---
