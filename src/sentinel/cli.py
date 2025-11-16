@@ -9,14 +9,14 @@ from sentinel.analytics.service import AnalyticsService
 from sentinel.analytics.utils import load_zones_from_json
 from sentinel.cli_utils import console, print_error, print_success
 from sentinel.config import settings
-from sentinel.config_loader import load_config_file
 from sentinel.detection.models import YOLODetector
 from sentinel.detection.service import DetectionService
+from sentinel.image_pipeline import ImagePipeline
 from sentinel.logging import configure_logging
-from sentinel.pipeline import VideoPipeline
+from sentinel.video_pipeline import VideoPipeline
 from sentinel.visualization.annotators import Annotators
 
-app = typer.Typer(help="Real-time object detection and tracking")
+app = typer.Typer(help="Object detection and tracking system")
 
 
 class Device(str, Enum):
@@ -25,97 +25,152 @@ class Device(str, Enum):
     CPU = "cpu"
 
 
-@app.command()
-def main(
-    source: Annotated[
+@app.command("detect-image")
+def detect_image(
+    source: Annotated[str, typer.Argument(help="Path to input image or directory")],
+    output: Annotated[
         Optional[str],
-        typer.Option("--source", "-s", help="Video source (webcam index or path)"),
+        typer.Option(
+            "--output", "-o", help="Output path for annotated image/directory"
+        ),
     ] = None,
     conf: Annotated[
-        Optional[float],
+        float,
         typer.Option("--conf", "-c", min=0.0, max=1.0, help="Confidence threshold"),
-    ] = None,
+    ] = 0.5,
     device: Annotated[
-        Optional[Device], typer.Option("--device", "-d", help="Device for inference")
+        Device, typer.Option("--device", "-d", help="Device for inference")
+    ] = Device.MPS,
+    model: Annotated[
+        Optional[str],
+        typer.Option(
+            "--model", "-m", help="YOLO model name (e.g., yolo11n.pt, yolo11m.pt)"
+        ),
     ] = None,
     track: Annotated[
         bool, typer.Option("--track", "-t", help="Enable tracking")
     ] = False,
-    model: Annotated[
-        Optional[str], typer.Option("--model", "-m", help="Path to YOLO model")
-    ] = None,
-    analytics: Annotated[
-        bool, typer.Option("--analytics", "-a", help="Enable zone analytics")
+    no_display: Annotated[
+        bool, typer.Option("--no-display", help="Don't show window (save only)")
     ] = False,
-    zones: Annotated[
-        Optional[str], typer.Option("--zones", "-z", help="Path to zones JSON")
-    ] = None,
-    config: Annotated[
-        Optional[str], typer.Option("--config", help="Load settings from TOML file")
-    ] = None,
     quiet: Annotated[
         bool, typer.Option("--quiet", "-q", help="Suppress output")
     ] = False,
 ) -> None:
-    """Run real-time object detection and tracking."""
+    """Detect objects in image(s). Supports single image or directory for batch processing."""
     configure_logging(use_rich=not quiet)
 
-    file_config = {}
-    if config:
-        try:
-            file_config = load_config_file(config)
-            if not quiet:
-                print_success(f"Loaded config: {config}")
-        except FileNotFoundError as e:
-            print_error(f"Config file not found: {e}")
-            raise typer.Exit(1)
-        except (ValueError, KeyError) as e:
-            print_error(f"Invalid config format: {e}")
-            raise typer.Exit(1)
-
-    parsed_source = (
-        int(source)
-        if source and source.isdigit()
-        else source or file_config.get("video_source", settings.video_source)
-    )
-    selected_device = (
-        device.value if device else file_config.get("device", settings.device)
-    )
-    model_path = (
-        Path(model)
-        if model
-        else Path(file_config.get("model_path", settings.model_path))
-    )
-    conf_threshold = (
-        conf
-        if conf is not None
-        else file_config.get("conf_threshold", settings.conf_threshold)
-    )
-
-    if analytics and not track:
-        print_error("Analytics requires --track")
+    source_path = Path(source)
+    if not source_path.exists():
+        print_error(f"Source not found: {source}")
         raise typer.Exit(1)
+
+    if source_path.is_file():
+        if source_path.suffix.lower() not in [".jpg", ".jpeg", ".png", ".bmp", ".webp"]:
+            print_error(f"Unsupported image format: {source_path.suffix}")
+            raise typer.Exit(1)
+
+    model_name = model if model else settings.model_name
 
     try:
         if not quiet:
             with Status("Loading model...", console=console):
-                detector = YOLODetector(model_path, selected_device)
+                detector = YOLODetector(model_name, device.value)
         else:
-            detector = YOLODetector(model_path, selected_device)
+            detector = YOLODetector(model_name, device.value)
     except FileNotFoundError:
-        print_error(f"Model file not found: {model_path}")
+        print_error(f"Model not found: {model_name}")
         raise typer.Exit(1)
     except RuntimeError as e:
         print_error(f"Model load failed: {e}")
         raise typer.Exit(1)
 
     if not quiet:
-        print_success(f"Model loaded: {model_path.name}")
+        print_success(f"Model loaded: {model_name}")
 
     detection_service = DetectionService(
         detector=detector,
         enable_tracking=track,
-        conf_threshold=conf_threshold,
+        conf_threshold=conf,
+    )
+
+    annotators = Annotators(enable_tracking=track, zone_configs=[])
+
+    try:
+        pipeline = ImagePipeline(detection_service, annotators)
+        pipeline.run(source, output_path=output, show_display=not no_display)
+
+        if output and not quiet:
+            print_success(f"Saved: {output}")
+    except KeyboardInterrupt:
+        raise typer.Exit(0)
+
+
+@app.command("detect-video")
+def detect_video(
+    source: Annotated[
+        Optional[str],
+        typer.Option("--source", "-s", help="Video source (webcam index or path)"),
+    ] = None,
+    conf: Annotated[
+        float,
+        typer.Option("--conf", "-c", min=0.0, max=1.0, help="Confidence threshold"),
+    ] = 0.5,
+    device: Annotated[
+        Device, typer.Option("--device", "-d", help="Device for inference")
+    ] = Device.MPS,
+    model: Annotated[
+        Optional[str],
+        typer.Option(
+            "--model", "-m", help="YOLO model name (e.g., yolo11n.pt, yolo11m.pt)"
+        ),
+    ] = None,
+    track: Annotated[
+        bool, typer.Option("--track", "-t", help="Enable tracking")
+    ] = False,
+    analytics: Annotated[
+        bool, typer.Option("--analytics", "-a", help="Enable zone analytics")
+    ] = False,
+    zones: Annotated[
+        Optional[str], typer.Option("--zones", "-z", help="Path to zones JSON")
+    ] = None,
+    quiet: Annotated[
+        bool, typer.Option("--quiet", "-q", help="Suppress output")
+    ] = False,
+) -> None:
+    """Detect and track objects in video or webcam feed."""
+    configure_logging(use_rich=not quiet)
+
+    if analytics and not track:
+        print_error("Analytics requires --track")
+        raise typer.Exit(1)
+
+    parsed_source = (
+        int(source) if source and source.isdigit() else source or settings.video_source
+    )
+
+    model_name = model if model else settings.model_name
+
+    try:
+        if not quiet:
+            with Status("Loading model...", console=console):
+                detector = YOLODetector(model_name, device.value)
+        else:
+            detector = YOLODetector(model_name, device.value)
+    except FileNotFoundError:
+        print_error(f"Model not found: {model_name}")
+        raise typer.Exit(1)
+    except RuntimeError as e:
+        print_error(f"Model load failed: {e}")
+        raise typer.Exit(1)
+
+    if not quiet:
+        print_success(f"Model loaded: {model_name}")
+
+    detection_service = DetectionService(
+        detector=detector,
+        enable_tracking=track,
+        conf_threshold=conf,
     )
 
     analytics_service = None
