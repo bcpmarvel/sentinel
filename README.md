@@ -1,182 +1,191 @@
-# Real-Time Object Detection & Tracking
+# Sentinel
 
-High-performance video analytics system for real-time object detection and multi-object tracking, optimized for edge deployment.
+Real-time object detection and tracking system with YOLOv8 and BoT-SORT.
 
-## Project Overview
+## Features
 
-This system processes live video streams (webcam/files) to detect and track multiple objects in real-time. Built for production use cases in surveillance, retail analytics, and smart infrastructure monitoring.
+- YOLOv8 object detection (30+ FPS on M1/M2)
+- BoT-SORT multi-object tracking
+- Zone-based analytics (counting, dwell time)
+- REST API for image detection
+- WebSocket streaming
+- GPU acceleration (MPS/CUDA)
 
-**Core Capabilities:**
-- Real-time object detection with YOLOv8
-- Persistent multi-object tracking across frames
-- Zone-based analytics (counting, dwell time, violations)
-- REST/WebSocket API for integration
-- Optimized for resource-constrained environments
+## Installation
 
-## Architecture
+Requires Python 3.12+
+
+```bash
+git clone <repo-url>
+cd cv-detection-tracking
+uv sync
 ```
-Video Input → Detection → Tracking → Analytics → Output/API
-     ↓           ↓           ↓          ↓           ↓
-  Webcam/     YOLOv8    BoT-SORT   Counters   Display/
-   File                            Zones      Stream
+
+Download a YOLOv8 model:
+```bash
+mkdir -p models
+wget https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8n.pt -O models/yolov8n.pt
 ```
 
-**Processing Pipeline:**
-1. **Capture**: Video frames from source (webcam/file)
-2. **Detect**: YOLOv8n identifies objects with bounding boxes
-3. **Track**: BoT-SORT maintains object IDs across frames
-4. **Analyze**: Zone monitoring, counting, dwell time calculation
-5. **Output**: Annotated video stream or REST/WebSocket API
+## Usage
 
-## Technology Stack
+### CLI
 
-### Core Detection & Tracking
-- **YOLOv8n** - Object detection model (Ultralytics)
-- **BoT-SORT** - Multi-object tracking algorithm
-- **PyTorch 2.5** - Deep learning framework with MPS backend
-- **Supervision** - Video annotation and tracking utilities
+**Basic detection:**
+```bash
+detect --source 0  # webcam
+detect --source video.mp4  # file
+```
 
-### Computer Vision
-- **OpenCV** - Video I/O and frame processing
-- **NumPy** - Numerical operations on frames
-- **Pillow** - Image manipulation
+**With tracking:**
+```bash
+detect --source 0 --track
+```
 
-### API & Services
-- **FastAPI** - REST API server
-- **WebSockets** - Real-time video streaming
-- **Uvicorn** - ASGI server
+**With zone analytics:**
+```bash
+detect --source 0 --track --analytics --zones zones.json
+```
 
-### Development
-- **Pydantic** - Configuration management
-- **pytest** - Testing framework
-- **Ruff** - Linting and formatting
+**Options:**
+```bash
+detect --source 0 \
+  --model models/yolov8s.pt \
+  --device mps \
+  --conf 0.6 \
+  --track \
+  --analytics \
+  --zones zones.json \
+  --config config.toml
+```
 
-## Key Technical Decisions
+### API Server
 
-**Why YOLOv8n (nano)?**
-- Fastest YOLO variant (30+ FPS on CPU)
-- Good accuracy/speed tradeoff for real-time use
-- 3MB model size suitable for edge deployment
+**Start server:**
+```bash
+serve
+```
 
-**Why BoT-SORT?**
-- State-of-art tracking accuracy
-- Built into Ultralytics (no extra dependencies)
-- Handles occlusions and re-identification
+**Detect objects in image:**
+```bash
+curl -X POST http://localhost:8000/api/detect \
+  -F "file=@image.jpg"
+```
 
-**Why PyTorch MPS?**
-- Native M1/M2 GPU acceleration
-- 2-3x faster than CPU inference
-- No CUDA dependency
+**Health check:**
+```bash
+curl http://localhost:8000/api/health
+```
 
-**Why FastAPI?**
-- Modern async Python framework
-- WebSocket support for streaming
-- Auto-generated OpenAPI docs
+## Configuration
 
-## Performance Targets
+Create `.env` or use `--config`:
+
+```bash
+# Model
+MODEL_PATH=models/yolov8n.pt
+DEVICE=mps  # mps, cuda, cpu
+CONF_THRESHOLD=0.5
+IOU_THRESHOLD=0.45
+
+# API
+API_HOST=0.0.0.0
+API_PORT=8000
+API_CORS_ORIGINS=["http://localhost:3000"]
+
+# Logging
+LOG_FORMAT=json  # json, console
+LOG_LEVEL=INFO
+```
+
+## Project Structure
+
+```
+src/sentinel/
+├── api/          # FastAPI routes, schemas, dependencies
+├── analytics/    # Zone analytics, dwell time tracking
+├── detection/    # YOLOv8 detector, service
+├── visualization/# Annotators for drawing
+├── cli.py        # CLI entrypoint
+├── server.py     # API server entrypoint
+├── config.py     # Pydantic settings
+└── pipeline.py   # Video processing pipeline
+```
+
+## Stack
+
+- **YOLOv8** (Ultralytics) - Object detection
+- **BoT-SORT** - Multi-object tracking
+- **PyTorch** - Inference with MPS/CUDA
+- **FastAPI** - REST API
+- **Supervision** - Video annotations
+- **OpenCV** - Video I/O
+- **Structlog** - Structured logging
+- **Typer** - CLI framework
+
+## Performance
 
 | Metric | Target | Hardware |
 |--------|--------|----------|
 | FPS | 30+ | M1 MacBook @ 720p |
 | Latency | <50ms | Per-frame inference |
-| Memory | <200MB | Runtime overhead |
 | Startup | <3s | Model loading |
 
-## Use Cases
+## Zone Analytics
 
-**Surveillance & Security**
-- Real-time threat detection
-- Perimeter monitoring
-- Access control validation
+Create `zones.json` to define monitoring zones:
 
-**Retail Analytics**
-- Customer traffic counting
-- Queue length monitoring
-- Dwell time analysis
+```json
+[
+  {
+    "id": "zone_1",
+    "name": "Entrance",
+    "polygon": [[100, 100], [500, 100], [500, 400], [100, 400]],
+    "color": [255, 0, 0]
+  }
+]
+```
 
-**Smart Infrastructure**
-- Traffic flow monitoring
-- Occupancy detection
-- Safety compliance
+Metrics:
+- Object count in zone
+- Average/max dwell time
+- Entry/exit events
 
-## Implementation Components
+## API Response
 
-### `src/config.py`
-Configuration management with Pydantic settings. Handles model paths, thresholds, device selection, and runtime parameters.
+```json
+{
+  "detections": [
+    {
+      "x1": 123.4,
+      "y1": 456.7,
+      "x2": 789.0,
+      "y2": 321.5,
+      "confidence": 0.89,
+      "class_id": 0,
+      "class_name": "person"
+    }
+  ],
+  "image_width": 1280,
+  "image_height": 720,
+  "processing_time_ms": 45.2,
+  "model_name": "yolov8n.pt",
+  "device": "mps"
+}
+```
 
-### `src/detect.py`
-Main detection pipeline. Loads video source, runs inference, visualizes results. Supports CLI arguments for source selection and output options.
+## Development
 
-### `src/tracker.py`
-Multi-object tracking wrapper around BoT-SORT. Maintains object IDs across frames, handles occlusions and re-identification.
+```bash
+# Install dev dependencies
+uv sync --dev
 
-### `src/analytics.py`
-Zone-based analytics engine. Tracks object counts, dwell times, zone violations, and generates metrics.
+# Format code
+uv run ruff format .
 
-### `src/api.py`
-FastAPI server exposing REST endpoints and WebSocket streams. Enables programmatic access to detection/tracking capabilities.
+# Lint
+uv run ruff check .
 
-## Development Approach
-
-**Phase 1: Core Detection** (Current)
-- Basic YOLOv8 inference on video
-- Display with bounding boxes
-- FPS monitoring
-
-**Phase 2: Tracking**
-- Add BoT-SORT tracker
-- Persistent object IDs
-- Track visualization
-
-**Phase 3: Analytics**
-- Zone definition
-- Object counting
-- Dwell time calculation
-
-**Phase 4: API**
-- FastAPI REST endpoints
-- WebSocket streaming
-- API documentation
-
-## Hardware Optimization
-
-**M1/M2 MacBooks:**
-- PyTorch MPS backend (GPU acceleration)
-- Automatic batch processing
-- Efficient memory management
-
-**Intel CPUs:**
-- OpenVINO conversion (future)
-- INT8 quantization
-- Multi-threading
-
-**Edge Devices:**
-- ONNX export for portability
-- TensorRT for NVIDIA
-- CoreML for Apple Silicon
-
-## Future Enhancements
-
-- [ ] Multi-camera synchronization
-- [ ] Cloud deployment (Docker/K8s)
-- [ ] Custom object classes (fine-tuning)
-- [ ] Prometheus metrics export
-- [ ] Video storage integration
-- [ ] Alert/notification system
-
-## Key Metrics for Portfolio
-
-**Technical Depth:**
-- Real-time processing (30+ FPS)
-- Production-ready code (type hints, tests, docs)
-- Multiple interfaces (CLI + API)
-
-**Engineering Quality:**
-- Clean architecture (separation of concerns)
-- Configurable (Pydantic settings)
-- Deployable (Docker support)
-
-**Relevance to Role:**
-- Video analytics (Gorilla's core product)
-- Edge optimization (Intel partnership)
-- Production deployment (FastAPI service)
+# Run tests
+uv run pytest
+```
