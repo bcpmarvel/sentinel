@@ -19,19 +19,30 @@
 
 ## 🎬 Demo
 
-> **Note:** Add your demo content here
+### 📸 Object Detection
 
-<details>
-<summary>📸 Click to see screenshots</summary>
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <b>Pedestrian Detection</b><br>
+      <img src="demos/outputs/images/pedestrian.jpg" alt="YOLO11 pedestrian detection" width="100%">
+    </td>
+    <td align="center" width="50%">
+      <b>Traffic Detection</b><br>
+      <img src="demos/outputs/images/traffic.jpg" alt="YOLO11 traffic detection" width="100%">
+    </td>
+  </tr>
+</table>
 
-<!-- Add screenshots here -->
-```
-Coming soon: Live detection demo, tracking visualization, zone analytics dashboard
-```
+### 🎥 Multi-Object Tracking
 
-</details>
-
-**Live Demo:** _Coming soon_
+<div align="center">
+  <img src="demos/outputs/videos/mot17-05-preview.gif" alt="BoT-SORT multi-object tracking demo" width="480">
+  <br>
+  <i>Real-time tracking of 20+ pedestrians with trajectory prediction</i>
+  <br><br>
+  <a href="https://github.com/bcpmarvel/sentinel/releases/download/v0.1.0/mot17-05-tracked.mp4">📥 Download Full Quality Video</a> (34MB MP4)
+</div>
 
 ---
 
