@@ -223,6 +223,9 @@ demos/outputs/*.avi
 demos/outputs/*.mov
 zones_*.json
 
+# macOS
+.DS_Store
+
 # YOLO model weights (auto-downloaded by Ultralytics)
 *.pt
 *.onnx
