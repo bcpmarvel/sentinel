@@ -218,13 +218,14 @@ __marimo__/
 CLAUDE.md
 
 # Project-specific
-*.pt
-*.onnx
-models/*.pt
-models/*.onnx
-data/videos/
-data/images/
+demos/outputs/
 *.mp4
 *.avi
 *.mov
 zones_*.json
+
+# YOLO model weights (auto-downloaded by Ultralytics)
+*.pt
+*.onnx
+yolo*.pt
+yolo*.onnx
