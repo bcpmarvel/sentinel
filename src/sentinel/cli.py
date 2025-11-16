@@ -25,7 +25,7 @@ class Device(str, Enum):
     CPU = "cpu"
 
 
-@app.command("detect-image")
+@app.command("image")
 def detect_image(
     source: Annotated[str, typer.Argument(help="Path to input image or directory")],
     output: Annotated[
@@ -106,7 +106,7 @@ def detect_image(
         raise typer.Exit(0)
 
 
-@app.command("detect-video")
+@app.command("video")
 def detect_video(
     source: Annotated[
         Optional[str],

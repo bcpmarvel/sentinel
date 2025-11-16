@@ -53,7 +53,7 @@ Try it in 3 commands:
 ```bash
 git clone https://github.com/bcpmarvel/sentinel.git
 cd sentinel
-uv run detect-image demos/inputs/images/pedestrian.jpg
+uv run detect image demos/inputs/images/pedestrian.jpg
 ```
 
 Models download automatically on first run. Output saved to `demos/outputs/`.
@@ -76,20 +76,20 @@ uv sync
 **Detect objects in demo images:**
 ```bash
 # Pedestrian detection
-uv run detect-image demos/inputs/images/pedestrian.jpg
+uv run detect image demos/inputs/images/pedestrian.jpg
 
 # Traffic detection
-uv run detect-image demos/inputs/images/traffic.jpg
+uv run detect image demos/inputs/images/traffic.jpg
 ```
 
 **Run on webcam:**
 ```bash
-uv run detect-video --source 0
+uv run detect video --source 0
 ```
 
 **Track objects in video:**
 ```bash
-uv run detect-video demos/inputs/videos/mot17-05.mp4 --track
+uv run detect video --source demos/inputs/videos/mot17-05.mp4 --track
 ```
 
 **Start API server:**
@@ -137,21 +137,21 @@ docker-compose --profile production up api-prod
 
 **Image Detection:**
 ```bash
-uv run detect-image <image_path> [--conf 0.5] [--model yolo11m.pt]
+uv run detect image <image_path> [--conf 0.5] [--model yolo11m.pt]
 ```
 
 **Video Detection:**
 ```bash
 # Basic detection
-uv run detect-video --source 0                           # Webcam
-uv run detect-video --source video.mp4                   # Video file
-uv run detect-video --source rtsp://camera.ip            # RTSP stream
+uv run detect video --source 0                           # Webcam
+uv run detect video --source video.mp4                   # Video file
+uv run detect video --source rtsp://camera.ip            # RTSP stream
 
 # With tracking
-uv run detect-video --source video.mp4 --track
+uv run detect video --source video.mp4 --track
 
 # Advanced options
-uv run detect-video --source 0 \
+uv run detect video --source 0 \
   --model yolo11s.pt \
   --device mps \
   --conf 0.6 \
@@ -171,7 +171,7 @@ uv run detect-video --source 0 \
 <summary><b>Advanced CLI Options</b></summary>
 
 ```bash
-uv run detect-video --help
+uv run detect video --help
 ```
 
 **Common options:**
