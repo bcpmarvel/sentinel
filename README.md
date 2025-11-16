@@ -298,14 +298,13 @@ API_PORT=8000
 LOG_FORMAT=json
 ```
 
-### CLI Usage
+### CLI Configuration
 
-Use `sentinel.toml` for advanced features:
+Configuration is managed through:
+- **Command-line options** for per-run settings
+- **Environment variables** (via `.env`) for persistent settings
 
-```bash
-cp sentinel.example.toml sentinel.toml
-detect --config sentinel.toml --source 0
-```
+See [Docker/API Deployment](#docker-deployment) section above for `.env` configuration.
 
 ---
 
