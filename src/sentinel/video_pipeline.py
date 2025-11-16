@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import cv2
 import numpy as np
 
@@ -14,11 +16,20 @@ class VideoPipeline:
         detection_service: DetectionService,
         annotators: Annotators,
         analytics_service: AnalyticsService | None = None,
+        output_path: str | None = None,
+        show_display: bool = True,
     ):
         self.detection_service = detection_service
         self.annotators = annotators
         self.analytics_service = analytics_service
+        self.output_path = output_path
+        self.show_display = show_display
         self.fps_counter = FPSCounter()
+        self.video_writer: cv2.VideoWriter | None = None
+
+        if self.output_path:
+            output_dir = Path(self.output_path).parent
+            output_dir.mkdir(parents=True, exist_ok=True)
 
     def run(self, source: str | int | None = None) -> None:
         source = source if source is not None else settings.video_source
@@ -26,6 +37,16 @@ class VideoPipeline:
 
         if not cap.isOpened():
             raise ValueError(f"Failed to open video source: {source}")
+
+        fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
+        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+        if self.output_path:
+            fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+            self.video_writer = cv2.VideoWriter(
+                self.output_path, fourcc, fps, (width, height)
+            )
 
         window_name = self._get_window_name()
 
@@ -37,14 +58,21 @@ class VideoPipeline:
 
                 annotated_frame = self._process_frame(frame)
 
-                cv2.imshow(window_name, annotated_frame)
+                if self.video_writer:
+                    self.video_writer.write(annotated_frame)
 
-                if cv2.waitKey(1) & 0xFF == ord("q"):
-                    break
+                if self.show_display:
+                    cv2.imshow(window_name, annotated_frame)
+
+                    if cv2.waitKey(1) & 0xFF == ord("q"):
+                        break
 
         finally:
             cap.release()
-            cv2.destroyAllWindows()
+            if self.video_writer:
+                self.video_writer.release()
+            if self.show_display:
+                cv2.destroyAllWindows()
 
     def _process_frame(self, frame: np.ndarray) -> np.ndarray:
         results = self.detection_service.process(frame)

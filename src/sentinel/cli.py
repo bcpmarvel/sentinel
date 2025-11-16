@@ -112,6 +112,13 @@ def detect_video(
         Optional[str],
         typer.Option("--source", "-s", help="Video source (webcam index or path)"),
     ] = None,
+    output: Annotated[
+        Optional[str],
+        typer.Option("--output", "-o", help="Output path for annotated video"),
+    ] = None,
+    no_display: Annotated[
+        bool, typer.Option("--no-display", help="Don't show video window")
+    ] = False,
     conf: Annotated[
         float,
         typer.Option("--conf", "-c", min=0.0, max=1.0, help="Confidence threshold"),
@@ -189,8 +196,17 @@ def detect_video(
     annotators = Annotators(enable_tracking=track, zone_configs=zone_configs)
 
     try:
-        pipeline = VideoPipeline(detection_service, annotators, analytics_service)
+        pipeline = VideoPipeline(
+            detection_service,
+            annotators,
+            analytics_service,
+            output_path=output,
+            show_display=not no_display,
+        )
         pipeline.run(parsed_source)
+
+        if output and not quiet:
+            print_success(f"Saved: {output}")
     except KeyboardInterrupt:
         raise typer.Exit(0)
 
