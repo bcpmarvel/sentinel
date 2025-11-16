@@ -11,9 +11,68 @@
 
 **YOLO11** × **BoT-SORT** × **FastAPI**
 
-[Features](#-features) • [Quick Start](#-quick-start) • [Demo](#-demo) • [API](#-api) • [Documentation](#-documentation)
+[Demo](#-demo) • [Quick Start](#-quick-start) • [Features](#-features) • [Usage](#️-usage) • [Docker](#-docker-deployment)
 
 </div>
+
+---
+
+## 🚀 Quick Start
+
+Try it in 3 commands:
+
+```bash
+git clone https://github.com/bcpmarvel/sentinel.git
+cd sentinel
+uv run detect-image demos/inputs/images/pedestrian.jpg
+```
+
+Models download automatically on first run. Output saved to `demos/outputs/`.
+
+### Prerequisites
+
+- Python 3.12+
+- `uv` package manager ([install](https://docs.astral.sh/uv/))
+
+### Installation
+
+```bash
+git clone https://github.com/bcpmarvel/sentinel.git
+cd sentinel
+uv sync
+```
+
+### Try It Out
+
+**Detect objects in demo images:**
+```bash
+# Pedestrian detection
+uv run detect-image demos/inputs/images/pedestrian.jpg
+
+# Traffic detection
+uv run detect-image demos/inputs/images/traffic.jpg
+```
+
+**Run on webcam:**
+```bash
+uv run detect-video --source 0
+```
+
+**Track objects in video:**
+```bash
+uv run detect-video demos/inputs/videos/mot17-05.mp4 --track
+```
+
+**Start API server:**
+```bash
+uv run serve
+```
+
+Test the API:
+```bash
+curl -X POST http://localhost:8000/api/detect \
+  -F "file=@demos/inputs/images/pedestrian.jpg"
+```
 
 ---
 
@@ -60,51 +119,6 @@
 
 ---
 
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Python 3.12+
-- `uv` package manager ([install](https://docs.astral.sh/uv/))
-
-### Installation
-
-```bash
-git clone https://github.com/bcpmarvel/sentinel.git
-cd sentinel
-uv sync
-```
-
-### Model Setup
-
-YOLO11 models are automatically downloaded on first use. No manual download required.
-
-### Run Detection
-
-```bash
-# Webcam detection
-detect --source 0
-
-# Video file with tracking
-detect --source video.mp4 --track
-
-# Zone analytics
-detect --source 0 --track --analytics --zones zones.json
-```
-
-### Start API Server
-
-```bash
-serve
-```
-
-Test the API:
-```bash
-curl -X POST http://localhost:8000/api/detect -F "file=@image.jpg"
-```
-
----
-
 ## 🐳 Docker Deployment
 
 ```bash
@@ -119,46 +133,79 @@ docker-compose --profile production up api-prod
 
 ## 🛠️ Usage
 
-<details>
-<summary><b>CLI Commands</b></summary>
+### CLI Commands
 
-### Basic Detection
+**Image Detection:**
 ```bash
-detect --source 0                    # Webcam
-detect --source video.mp4            # Video file
-detect --source rtsp://camera.ip     # RTSP stream
+uv run detect-image <image_path> [--conf 0.5] [--model yolo11m.pt]
 ```
 
-### Advanced Options
+**Video Detection:**
 ```bash
-detect --source 0 \
+# Basic detection
+uv run detect-video --source 0                           # Webcam
+uv run detect-video --source video.mp4                   # Video file
+uv run detect-video --source rtsp://camera.ip            # RTSP stream
+
+# With tracking
+uv run detect-video --source video.mp4 --track
+
+# Advanced options
+uv run detect-video --source 0 \
   --model yolo11s.pt \
   --device mps \
   --conf 0.6 \
   --track \
   --analytics \
-  --zones zones.json \
-  --config sentinel.toml
+  --zones zones.json
 ```
+
+**Available Models:**
+- `yolo11n.pt` - Nano (fastest)
+- `yolo11s.pt` - Small
+- `yolo11m.pt` - Medium (default, balanced)
+- `yolo11l.pt` - Large
+- `yolo11x.pt` - Extra large (most accurate)
+
+<details>
+<summary><b>Advanced CLI Options</b></summary>
+
+```bash
+uv run detect-video --help
+```
+
+**Common options:**
+- `--conf`: Confidence threshold (0-1, default: 0.25)
+- `--device`: Device (cpu/mps/cuda, auto-detected)
+- `--model`: YOLO model path
+- `--track`: Enable object tracking
+- `--analytics`: Enable zone analytics
+- `--zones`: Path to zones.json file
+- `--no-display`: Run without GUI window
+- `--save-video`: Save output video
 
 </details>
 
-<details>
-<summary><b>API Endpoints</b></summary>
+### API Endpoints
 
-### Health Check
+Start the server:
+```bash
+uv run serve
+```
+
+**Health Check:**
 ```bash
 curl http://localhost:8000/api/health
 ```
 
-### Detect Objects
+**Detect Objects:**
 ```bash
 curl -X POST http://localhost:8000/api/detect \
-  -F "file=@image.jpg" \
+  -F "file=@demos/inputs/images/pedestrian.jpg" \
   -F "conf_threshold=0.5"
 ```
 
-### Response
+**Response:**
 ```json
 {
   "detections": [
@@ -176,6 +223,34 @@ curl -X POST http://localhost:8000/api/detect \
   "model_name": "yolo11m.pt",
   "device": "mps"
 }
+```
+
+**Interactive API Docs:**
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
+
+<details>
+<summary><b>More API Examples</b></summary>
+
+**With custom confidence threshold:**
+```bash
+curl -X POST http://localhost:8000/api/detect \
+  -F "file=@myimage.jpg" \
+  -F "conf_threshold=0.7"
+```
+
+**Using Python requests:**
+```python
+import requests
+
+with open("image.jpg", "rb") as f:
+    response = requests.post(
+        "http://localhost:8000/api/detect",
+        files={"file": f},
+        data={"conf_threshold": 0.5}
+    )
+
+print(response.json())
 ```
 
 </details>
