@@ -109,26 +109,6 @@ docker-compose --profile production up api-prod
 
 ---
 
-## 📊 Performance
-
-| Metric | Value | Hardware |
-|--------|-------|----------|
-| **Throughput** | 30+ FPS | M1 MacBook @ 720p |
-| **Latency** | <50ms | Per-frame inference |
-| **Startup Time** | <3s | Model loading |
-| **Memory** | ~2GB | YOLOv8n + tracking |
-
-### Comparison
-
-| Solution | FPS | Tracking | Analytics | API | Docker |
-|----------|-----|----------|-----------|-----|--------|
-| **Sentinel** | 30+ | ✅ BoT-SORT | ✅ Zones | ✅ FastAPI | ✅ |
-| Ultralytics | 40+ | ✅ ByteTrack | ❌ | ❌ | ⚠️ |
-| OpenCV DNN | 15+ | ❌ | ❌ | ❌ | ❌ |
-| DeepSORT | 20+ | ✅ DeepSORT | ❌ | ❌ | ❌ |
-
----
-
 ## 🛠️ Usage
 
 <details>
@@ -360,7 +340,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 <div align="center">
 
 **[⬆ Back to Top](#-sentinel)**
-
-Made with ❤️ by [bcpmarvel](https://github.com/bcpmarvel)
 
 </div>
